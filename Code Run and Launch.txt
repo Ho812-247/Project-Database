@@ -1,0 +1,19 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ */
+
+package lab4pdm;
+
+/**
+ *
+ * @author HP
+ */
+public class Books {
+
+    public static void main(String[] args) {
+        form frm = new form();
+        frm.setTitle("Hồ Tiến Đạt ITCSIU21047");
+        frm.setVisible(true);
+                
+    }
+}

@@ -1,0 +1,123 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package lab4pdm;
+import java.awt.BorderLayout;
+	import java.awt.EventQueue;
+
+	import javax.swing.JFrame;
+	import javax.swing.JPanel;
+	import javax.swing.border.EmptyBorder;
+	import javax.swing.JLabel;
+	import javax.swing.JOptionPane;
+	import javax.swing.JTextField;
+	import javax.swing.JButton;
+	import javax.swing.JTextArea;
+	import java.awt.Font;
+	import javax.swing.SwingConstants;
+	import java.awt.event.ActionListener;
+	import java.sql.Connection;
+	import java.sql.DriverManager;
+	import java.sql.ResultSet;
+	import java.sql.ResultSetMetaData;
+	import java.sql.SQLException;
+	import java.sql.Statement;
+	import java.awt.event.ActionEvent;
+/**
+ *
+ * @author HP
+ */
+public class form extends JFrame {
+    private JPanel contentPane;
+		private JTextField txtQuery;
+ public static void main(String[] args) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					try {
+						form frame = new form();
+						frame.setVisible(true);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		} 
+ public form() {
+			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			setBounds(400, 400, 866, 550);
+			contentPane = new JPanel();
+			contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+			setContentPane(contentPane);
+			contentPane.setLayout(null);
+			
+			JLabel lblQuery = new JLabel("Query");
+			lblQuery.setHorizontalAlignment(SwingConstants.LEFT);
+			lblQuery.setFont(new Font("Tahoma", Font.BOLD, 24));
+			lblQuery.setBounds(12, 30, 73, 35);
+			contentPane.add(lblQuery);
+			
+			txtQuery = new JTextField();
+			txtQuery.setFont(new Font("Tahoma", Font.BOLD, 16));
+			txtQuery.setBounds(95, 13, 588, 91);
+			contentPane.add(txtQuery);
+			txtQuery.setColumns(10);
+			
+			JTextArea txtResult = new JTextArea();
+			txtResult.setBounds(33, 140, 783, 326);
+			contentPane.add(txtResult);
+			
+			JButton btnRun = new JButton("Run");
+			btnRun.setFont(new Font("Tahoma", Font.ITALIC, 21));
+			btnRun.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					if(txtQuery.getText().length() ==0){
+		                JOptionPane.showMessageDialog(null,"Please input query string!", "Message", JOptionPane.WARNING_MESSAGE);
+		                return;
+		            }
+					txtResult.selectAll();
+		            txtResult.replaceSelection("");
+		            Connection conn = null;
+		            try {
+		            	DriverManager.registerDriver(new com.microsoft.sqlserver.jdbc.SQLServerDriver());
+		            	conn = DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=Flight_Management;user=sa;password=sa; encrypt = false");
+		            	
+		            } catch ( SQLException e) {
+		            	e.printStackTrace();
+		            }
+		            try {
+		            	Statement  stmt = conn.createStatement();
+		            	String SQL = txtQuery.getText() ;
+		                ResultSet rs = stmt.executeQuery(SQL);
+		                    
+		                StringBuilder results = new StringBuilder();
+		                ResultSetMetaData metaData = rs.getMetaData();
+		                int numberOfColumns = metaData.getColumnCount();
+		                for (int i=1; i<= numberOfColumns; i++){
+		                    results.append(metaData.getColumnName(i)).append("\t");
+		                }
+		                results.append("\n");
+		                
+		                //MetaData
+		                while (rs.next()) {
+		                	for (int i = 1; i<= numberOfColumns;i++) {
+		                		results.append(rs.getObject(i)).append("\t");
+		                	}
+		                	results.append("\n");
+		                	
+		                }
+		                txtResult.setText(results.toString());	        
+		            }
+		            catch(SQLException e) {
+		            	txtResult.setText(e.getMessage());
+		            }
+				}
+			});
+			btnRun.setBounds(723, 30, 93, 47);
+			contentPane.add(btnRun);
+			
+			
+		}
+}
+
+
